@@ -28,21 +28,18 @@ the thread around it accumulates whatever a support thread accumulates. With a
 one-post thread the two are equivalent; once the thread has pages, the permalink
 lands better. Swap it in if you want consistency with the other plugin.
 
-### 2. GitHub release location — `$eaeReleasesUrl` in `manifest.php`
+### 2. GitHub release location — DONE
 
-Currently `''`. Set it to the tagged release page, e.g.
-`https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.0`.
+`$eaeReleasesUrl` is set to:
 
-Be aware this only feeds the `changelog` manifest key, and **no supported Zen
-Cart version reads that key**. Verified against v1.5.8, v2.0.0, v2.2.2 and
-v3.0.0-dev: the only manifest keys consumed are `pluginName`,
-`pluginDescription`, `pluginAuthor`, `pluginVersion`, `zcVersions` and
-`pluginId`. `changelog`, `github_repo` and `pluginGroups` are recorded for the
-plugin library and possible future core use, but nothing renders them.
+    https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.0
 
-If the release page should be visible to a store owner, it has to go in
-`pluginDescription` — that is the only field that reaches the Plugin Manager
-panel.
+Because **no supported Zen Cart version reads the `changelog` key** — verified
+against v1.5.8, v2.0.0, v2.2.2 and v3.0.0-dev, where the only keys consumed are
+`pluginName`, `pluginDescription`, `pluginAuthor`, `pluginVersion`, `zcVersions`
+and `pluginId` — the URL is also surfaced as a **Release Notes** link in
+`pluginDescription`, which is the only field that reaches the Plugin Manager
+panel. Setting it in `changelog` alone would have shown it to nobody.
 
 ### 3. Plugin library listing — already set
 
@@ -59,8 +56,12 @@ from the original mod.
 ## Before tagging
 
 - [x] `$eaeForumUrl` set — thread 231172, live, renders in Plugin Manager
-- [ ] `$eaeReleasesUrl` set, and surfaced in `pluginDescription` if it should be visible
-- [ ] `pluginVersion` in `manifest.php` matches the `v3.0.0/` directory name
+- [x] `$eaeReleasesUrl` set, and surfaced as a Release Notes link in `pluginDescription`
+- [x] `pluginVersion` in `manifest.php` matches the `v3.0.0/` directory name
+- [x] GitHub: v2.0.0 preserved on the `2.0.0` branch; `main` carries v3.0.0
+- [x] GitHub release `v3.0.0` published, with the packaged zip attached
+- [ ] **Submit to the Zen Cart Plugins Library** (id 6) — the remaining step
+- [ ] Post the follow-up forum reply (`forum-post-2.bbcode.txt`) once submitted
 - [ ] WCAG pass completed (deferred until after operational testing)
 - [ ] Operational test on a real cart — the admin page has never been rendered
       inside a live Zen Cart; only its SQL, renderers and input handling are
