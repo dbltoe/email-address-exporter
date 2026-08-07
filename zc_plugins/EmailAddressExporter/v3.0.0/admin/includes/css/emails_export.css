@@ -1,0 +1,184 @@
+/*
+ * Email Address Exporter
+ *
+ * ---------------------------------------------------------------------------
+ * TYPE SIZE, AND WHERE THESE NUMBERS COME FROM
+ *
+ * Two rules govern this file:
+ *
+ *   1. No text on this page may compute smaller than 14px.
+ *   2. Every font-size is a relative unit, never px, so a reader who scales
+ *      text up gets it (WCAG 2.1 SC 1.4.4, Resize Text).
+ *
+ * What `rem` resolves against here is not obvious, and getting it wrong is
+ * easy. Bootstrap 3.4.1 sets `html { font-size: 10px }` -- but the admin's own
+ * stylesheet.css is loaded AFTER Bootstrap by admin_html_head.php and sets:
+ *
+ *      a, body, html, table { font: normal normal 11px Verdana, sans-serif; }
+ *
+ * Same specificity, later in the cascade, so it wins. The effective root on
+ * every supported cart (v1.5.8, v2.0.0, v2.2.2, v3.0.0-dev -- all identical) is
+ * therefore:
+ *
+ *      1rem = 11px,  so the 14px floor is 1.273rem
+ *
+ * That same rule also makes the admin's default body text 11px, not
+ * Bootstrap's 14px. The rest of the core admin scale, also from stylesheet.css:
+ *
+ *      h1 18px (small-caps)   h2 17px   h3 15px   h4 14px   h5 13px   h6 12px
+ *
+ * This page therefore uses:
+ *
+ *      body / controls / help   1.3rem = 14.3px   (core admin is 11px)
+ *      h3                       1.4rem = 15.4px   (core 15px)
+ *      h2                       1.5rem = 16.5px   (core 17px)
+ *      h1                       1.6rem = 17.6px   (core 18px)
+ *
+ * Everything clears the 14px floor, the scale still ascends, and the page title
+ * stays visually in step with every other admin page rather than towering over
+ * it. `html` itself is left alone -- changing it would re-scale every rem
+ * measurement in the whole admin, not just this page.
+ *
+ * NOTE ON HEADROOM: body text at 1.3rem clears the floor by 0.3px, which relies
+ * on that 11px root holding. A store that customises stylesheet.css back to
+ * Bootstrap's 10px would put this page at 13px and under the floor. If that ever
+ * comes up, raise these four values by .1rem rather than touching `html`.
+ *
+ * Bootstrap sizes most form and helper classes in px, and those win by
+ * specificity unless restated, which is why the block below names every
+ * text-bearing element explicitly instead of relying on inheritance.
+ * ---------------------------------------------------------------------------
+ *
+ * The other job this file does is LINE LENGTH. The admin runs in
+ * .container-fluid, so on a wide monitor a paragraph can stretch past 1900px --
+ * roughly 300 characters a line, where comfortable reading is 45-75. Every
+ * block of prose carries .eae-measure, which caps it at 72ch.
+ */
+
+/* ---------------------------------------------------------------------------
+   Body text: 1.3rem / 14.3px. Nothing here may drop below 1.273rem (14px).
+   --------------------------------------------------------------------------- */
+
+#eaeForm,
+#eaeForm p,
+#eaeForm li,
+#eaeForm label,
+#eaeForm select,
+#eaeForm select option,
+#eaeForm input,
+#eaeForm textarea,
+#eaeForm .form-control,
+#eaeForm .control-label,
+#eaeForm .checkbox label,
+#eaeForm .radio label,
+#eaeForm .help-block,
+#eaeForm .alert,
+#eaeForm .btn,
+.eae-instructions,
+.eae-instructions p,
+.eae-instructions li,
+.eae-instructions ol,
+.eae-instructions ul {
+    font-size: 1.3rem;
+}
+
+/* The page title. Core sizes h1 at a fixed 18px; this restates essentially the
+   same size in rem so it scales with the reader's text setting, and leaves the
+   small-caps treatment from stylesheet.css alone. */
+.eae-heading {
+    font-size: 1.6rem;
+}
+
+/* Caps the measure for anything that is a sentence rather than a control. */
+.eae-measure {
+    max-width: 72ch;
+}
+
+/* Bootstrap fixes input height in px, which clips text once it is scaled up. */
+#eaeForm .form-control {
+    height: auto;
+    padding: .4em .6em;
+}
+
+/* -------------------------------------------------------------------------
+   Two-column layout.
+
+   The columns are col-md-*, so they sit side by side from 992px up (desktop
+   and tablet landscape) and stack below it (tablet portrait at 768px, and
+   mobile). That is the Bootstrap 3 md breakpoint doing the work -- no custom
+   media query is needed for the stacking itself.
+
+   The one media query below stays in px on purpose: it has to fire at exactly
+   the same width as Bootstrap's own grid, or the divider would appear while
+   the columns were still stacked. It controls no text size.
+   ------------------------------------------------------------------------- */
+
+.eae-panel {
+    padding: 0 0 1em;
+}
+
+@media (min-width: 992px) {
+    .eae-panels > [class*="col-md-"] + [class*="col-md-"] {
+        border-left: 1px solid #e0e0e0;
+    }
+    .eae-panels > [class*="col-md-"] + [class*="col-md-"] .eae-panel {
+        padding-left: 1.5em;
+    }
+}
+
+#eaeForm h2 {
+    font-size: 1.5rem;
+    margin-top: 1.2em;
+    padding-bottom: .3em;
+    border-bottom: 1px solid #ddd;
+}
+
+/* The first heading in each column should line up with the other. */
+.eae-panel > h2:first-child {
+    margin-top: .6em;
+}
+
+#eaeForm h3 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin: 1.2em 0 .6em;
+}
+
+/* Stacked labels sit directly above their control, so they need less air
+   beneath them than Bootstrap's default. Size is set in the block above;
+   these are spacing and alignment only. */
+#eaeForm .control-label {
+    margin-bottom: .2em;
+    text-align: left;
+    padding-top: 0;
+    display: block;
+}
+
+/* Help text is meant to be quieter than the control it explains, not smaller
+   than the house minimum -- so it is toned down with colour, never with size.
+   #666 on #fff is 5.7:1, which clears WCAG AA for body text. */
+#eaeForm .help-block {
+    color: #666;
+    margin-top: .4em;
+}
+
+/* Excluded-customer notices. */
+#eaeForm .eae-excluded {
+    margin-top: .5em;
+    padding: .6em .9em;
+}
+
+.eae-columns .checkbox {
+    margin-top: .25em;
+    margin-bottom: .25em;
+}
+
+.eae-actions {
+    margin: 1.5em 0 2em;
+    padding-top: 1em;
+    border-top: 1px solid #ddd;
+}
+
+@media print {
+    @page { size: landscape; }
+}

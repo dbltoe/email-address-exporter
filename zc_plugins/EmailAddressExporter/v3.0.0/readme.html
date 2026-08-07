@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email Address Exporter v3.0.0 &mdash; Documentation</title>
+<style>
+    :root { color-scheme: light dark; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6; max-width: 52rem; margin: 0 auto; padding: 1.5rem 1.25rem 4rem;
+        color: #222; background: #fff;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: .2rem; }
+    h2 { font-size: 1.3rem; margin-top: 2.2rem; padding-bottom: .3rem; border-bottom: 2px solid #e3e3e3; }
+    h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+    .sub { color: #666; margin-top: 0; }
+    code, kbd { background: #f2f2f2; padding: .12em .35em; border-radius: 3px; font-size: .9em; }
+    pre { background: #f6f6f6; padding: .8rem 1rem; border-radius: 5px; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; display: block; overflow-x: auto; }
+    th, td { border: 1px solid #ddd; padding: .45rem .6rem; text-align: left; vertical-align: top; }
+    th { background: #f2f2f2; }
+    .note { border-left: 4px solid #2f6f9f; background: #eef5fb; padding: .7rem 1rem; margin: 1.1rem 0; border-radius: 0 4px 4px 0; }
+    .warn { border-left: 4px solid #b5890a; background: #fdf6e3; padding: .7rem 1rem; margin: 1.1rem 0; border-radius: 0 4px 4px 0; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #ddd; color: #666; font-size: .9em; }
+    @media (prefers-color-scheme: dark) {
+        body { color: #ddd; background: #1c1c1e; }
+        h2 { border-bottom-color: #3a3a3c; }
+        code, kbd, pre, th { background: #2c2c2e; }
+        th, td { border-color: #3a3a3c; }
+        .note { background: #16242f; border-left-color: #4a8fc0; }
+        .warn { background: #2e2712; border-left-color: #c9a227; }
+        footer { border-top-color: #3a3a3c; color: #999; }
+        a { color: #6cb6ff; }
+    }
+</style>
+</head>
+<body>
+
+<h1>Email Address Exporter</h1>
+<p class="sub">Version 3.0.0 &mdash; for Zen Cart v1.5.8 through v3.0.0</p>
+
+<p>Exports customer email addresses and contact details from your Zen Cart store to a file you
+can import into a mailing tool, spreadsheet, or address book.</p>
+
+<h2>Requirements</h2>
+<table>
+    <tr><th>Zen Cart</th><td>v1.5.8 &ndash; v3.0.0 (a single codebase covers the whole range)</td></tr>
+    <tr><th>PHP</th><td>7.4 or newer, including 8.x</td></tr>
+    <tr><th>Admin permission</th><td>The page registers under <strong>Tools</strong> and obeys normal admin access control.</td></tr>
+</table>
+
+<h2>Where to get it</h2>
+<p>The official listing is in the Zen Cart Plugins Library:
+<a href="https://www.zen-cart.com/downloads.php?do=file&amp;id=6">zen-cart.com/downloads.php?do=file&amp;id=6</a>.
+Source and releases are on
+<a href="https://github.com/dbltoe/email-address-exporter">GitHub</a>.</p>
+<div class="note">
+    Zen Cart checks that library listing for you. If a newer version is published, Plugin
+    Manager flags it on the plugin's row &mdash; no need to watch this page.
+</div>
+
+<h2>Installing</h2>
+<ol>
+    <li>Back up your store's database and files, as with any change.</li>
+    <li>This download's own root contains a <code>zc_plugins/</code> folder, with this plugin's files
+        inside it at <code>zc_plugins/EmailAddressExporter/v3.0.0/</code>. Upload that entire
+        <code>zc_plugins/</code> folder into <strong>your store's root</strong> &mdash; the folder that also
+        holds <code>YOUR_ADMIN</code>, <code>includes/</code>, <code>email/</code> and <code>logs/</code>
+        &mdash; <strong>merging</strong> it into the <code>zc_plugins/</code> folder already there.</li>
+    <li>In admin, go to <strong>Modules &gt; Plugin Manager</strong>.</li>
+    <li>Find <em>Export Email Addresses</em> and click <strong>Install</strong>.</li>
+    <li>The new page appears at <strong>Tools &gt; Export Email Addresses</strong>.</li>
+    <li>Grant access to the appropriate users in <strong>Admin Access Management</strong>.</li>
+</ol>
+
+<p><strong>How to confirm it landed correctly:</strong> your store's <code>zc_plugins/</code> directory
+should now contain an <code>EmailAddressExporter</code> folder alongside whatever other plugins you
+already have, so that this file exists:</p>
+<pre>&lt;your store root&gt;/zc_plugins/EmailAddressExporter/v3.0.0/manifest.php</pre>
+
+<div class="warn">
+    <strong>The one mistake worth checking for:</strong> if you end up with
+    <code>zc_plugins/zc_plugins/</code>, the folder was dropped one level too deep. Move the
+    <code>EmailAddressExporter</code> folder up one level and delete the now-empty inner
+    <code>zc_plugins</code>. Plugin Manager will not list the plugin at all until this is right.
+</div>
+
+<p>Nothing is installed outside that one directory. No files are copied into or edited inside
+<code>YOUR_ADMIN</code>, <code>includes/</code> or your template &mdash; which is what makes the plugin
+safe to remove again later.</p>
+
+<div class="note">
+    <strong>Already running an earlier release?</strong> Uninstall it in Plugin Manager first, then
+    install v3.0.0. Your data is unaffected &mdash; this plugin stores nothing of its own.
+</div>
+
+<h2>Using the page</h2>
+
+<h3>1. Choose who to export</h3>
+<p>There are two modes:</p>
+<table>
+    <tr>
+        <th style="width:12rem">Build a list using the filters</th>
+        <td>The default. The plugin builds its own query from the filter controls, and you choose
+            exactly which columns land in the file.</td>
+    </tr>
+    <tr>
+        <th>Use a saved audience</th>
+        <td>Runs one of the saved queries from <strong>Tools &gt; Query Builder</strong>. The exported
+            columns are whatever that query returns, so the column checkboxes do not apply. Use this
+            if you have already built a custom segment there.</td>
+    </tr>
+</table>
+
+<h3>2. Filters</h3>
+
+<div class="warn">
+    <strong>Consent matters.</strong> The two checkboxes at the top &mdash; <em>only newsletter
+    subscribers</em> and <em>exclude email format "NONE"</em> &mdash; are what keep an export limited to
+    people who agreed to be emailed. Both are on by default. Turning them off exports addresses
+    regardless of consent; make sure you have a lawful basis (GDPR, CAN-SPAM, CASL, and so on)
+    before you do.
+</div>
+
+<table>
+    <tr><th style="width:14rem">Country</th><td>Matches the customer's default address. Choosing a country reloads the page so the State/Zone list can be populated for it.</td></tr>
+    <tr><th>State / Zone</th><td>If the chosen country has zones defined, this becomes a dropdown. Otherwise it is a free-text box that partially matches the address's state field.</td></tr>
+    <tr><th>City</th><td>Partial match, so "york" finds both York and New York.</td></tr>
+    <tr><th>Registered From / To</th><td>Filters on the account creation date. Leave one box blank for an
+        open-ended range &mdash; blank <em>From</em> with <em>To</em> set means &ldquo;everything up to that
+        date&rdquo;, reaching back to your very first customer.
+        <br><br><strong>One caveat:</strong> a customer whose registration date was never recorded (usually
+        one added by an admin, or brought in by an import) cannot satisfy a date test, so filling in either
+        box leaves them out. The page tells you how many that affects &mdash; see below. Leave both blank if
+        you need them included.</td></tr>
+    <tr><th>Has / has never ordered</th><td>Mutually exclusive; selecting both is rejected.</td></tr>
+    <tr><th>Ordered between</th><td>Filters on order date. Combined with the fields below, all purchase conditions must be satisfied <em>by the same order</em>.</td></tr>
+    <tr><th>Order status</th><td>Restrict to orders in a particular status, e.g. only Delivered.</td></tr>
+    <tr><th>Purchased from category</th><td>Optionally includes every subcategory beneath the one you pick.</td></tr>
+    <tr><th>Purchased product ID</th><td>The numeric product ID, as shown in Catalog &gt; Products.</td></tr>
+</table>
+
+<p>Filters combine with AND. For example: <em>Country = United States</em>, <em>State = Florida</em>,
+<em>Ordered between 2025-01-01 and 2025-06-30</em> and <em>category = Widgets</em> gives you Florida
+customers who bought something from Widgets in the first half of 2025.</p>
+
+<div class="note">
+    A customer who placed several qualifying orders still appears <strong>once</strong>. The purchase
+    conditions are evaluated with an <code>EXISTS</code> test rather than a join, so no duplicate rows.
+</div>
+
+<h3>Customers a filter leaves out</h3>
+<p>Two of the filters can drop a customer because the information they test is <em>missing</em>, rather
+than because it failed the test:</p>
+<ul>
+    <li>a <strong>registration date</strong> bound leaves out anyone with no recorded registration date
+        &mdash; usually a customer added by an admin, or brought in by an import;</li>
+    <li>a <strong>location</strong> filter leaves out anyone with no default address on file.</li>
+</ul>
+<p>Rather than let that happen quietly, the page counts them and says so next to the filter responsible:
+<em>&ldquo;12 customer(s) match everything else you have chosen but have no recorded registration
+date&rdquo;</em>. The count respects every other filter you have set, so it is exactly the number that
+would otherwise have been in your file. Clear the filter in question to include them.</p>
+<div class="warn">
+    The count is worked out when the page is drawn, so set your filters and then click
+    <strong>Refresh Filter Options</strong> to see it before you export. Nothing is counted unless the
+    filter concerned is actually in use.
+</div>
+
+<h3>3. Columns</h3>
+<p>Tick whichever fields you want. The email address is always included and cannot be unticked.
+Available columns include name, telephone, fax, company, full address (street, suburb, city,
+state, postcode, country), newsletter flag, email format, registration date and last logon.</p>
+<p>Address columns come from the customer's <strong>default address</strong>. A customer with no
+address book entry still exports, with those columns empty.</p>
+
+<h3>4. Output</h3>
+<table>
+    <tr><th style="width:6rem">CSV</th><td>Downloads. RFC&nbsp;4180 quoting, so commas, quotes and line breaks inside a value are safe.</td></tr>
+    <tr><th>TXT</th><td>Downloads. Tab-separated.</td></tr>
+    <tr><th>XML</th><td>Downloads. One <code>&lt;address_book&gt;</code> root containing one <code>&lt;contact&gt;</code> per customer.</td></tr>
+    <tr><th>JSON</th><td>Downloads. An array of objects, pretty-printed.</td></tr>
+    <tr><th>HTML</th><td>Displayed on screen instead of downloading, so you can copy and paste it.</td></tr>
+</table>
+
+<p>The file extension is set automatically to match the format you picked &mdash; whatever you type in
+the filename box, the result is always correct and safe.</p>
+
+<h3>Telephone numbers</h3>
+<p>Customers type phone numbers however they like, so most stores accumulate
+<code>(555)&nbsp;123-4567</code>, <code>555.123.4567</code> and <code>5551234567</code> side by side.
+Set <strong>Telephone Format:</strong> to <em>Digits only</em> and the punctuation is stripped on
+the way out, so every number in the file is comparable.</p>
+<p>A leading <code>+</code> is kept, because it is the only thing distinguishing an international
+number from a local one, and an extension written as <code>x123</code> or <code>ext.&nbsp;123</code> is
+preserved rather than merged into the number. Letters are dropped, so a vanity number like
+<code>1-800-FLOWERS</code> becomes <code>1800</code> &mdash; leave such numbers <em>As stored</em> if you have them.</p>
+<div class="note">
+    The option only changes the exported file. Your stored customer data is never modified.
+    Going the other way &mdash; <em>adding</em> consistent formatting &mdash; is not offered, because it
+    would require knowing each number's dialling plan, which Zen Cart does not record. Guessing
+    it would mangle every international number in the file.
+</div>
+
+<h3>Opening CSV in Excel</h3>
+<p>Leave <strong>Add a UTF-8 BOM</strong> ticked (the default). Without it, Excel on Windows assumes
+the system codepage and mangles accented characters &mdash; <em>Zo&eacute;</em> arrives as <em>ZoÃ©</em>.
+Untick it only if the tool you are importing into dislikes a BOM.</p>
+
+<div class="note">
+    Values that begin with <code>=</code>, <code>+</code>, <code>-</code> or <code>@</code> are prefixed
+    with an apostrophe so spreadsheets treat them as text rather than executing them as formulas.
+    This is deliberate protection against CSV injection, and the apostrophe is not part of the data.
+</div>
+
+<h2>Notes and limitations</h2>
+<ul>
+    <li>Filters apply to the <em>Build a list using the filters</em> mode only. A saved audience runs exactly as written in Query Builder.</li>
+    <li>Very large exports run with a 10-minute time limit. If your host caps memory below that, export in date-range slices.</li>
+    <li>This plugin only ever reads your data. It creates no tables and modifies no records.</li>
+    <li>The <em>state</em> column falls back to the zone name when the free-text state field is empty.</li>
+</ul>
+
+<h2>What v3.0.0 brings</h2>
+<p>See <code>CHANGELOG.md</code> for the full list. The headlines:</p>
+<ul>
+    <li>New filtering by country, state, city, registration date, purchase date, order status, category and product.</li>
+    <li>You now choose which columns are exported.</li>
+    <li>Added JSON output; XML output is now well-formed (it previously was not).</li>
+    <li><strong>Fixed:</strong> choosing CSV silently produced a TXT file.</li>
+    <li><strong>Fixed:</strong> company and telephone columns always came out empty.</li>
+    <li><strong>Fixed:</strong> the "All Customers" audience never appeared in the list.</li>
+    <li><strong>Fixed:</strong> the page opened with a spurious "please select an audience" error.</li>
+    <li>Proper CSV quoting, CSV-injection protection, and safe filename handling.</li>
+</ul>
+
+<footer>
+    <h2 style="border:0; margin-top:0">Credits</h2>
+    <p>This plugin is the work of a good many people over about twenty years:</p>
+    <ul>
+        <li><strong>DrByte</strong> &mdash; original author, and the long-time maintainer who
+            carried it through successive Zen Cart releases and converted it to the
+            encapsulated plugin structure.</li>
+        <li><strong>That Software Guy (swguy)</strong> &mdash; later revisions.</li>
+        <li><strong>Swifty8078</strong> &mdash; later revisions.</li>
+        <li><strong>Ooba_Scott</strong> &mdash; later revisions.</li>
+        <li><strong>The Zen Cart Development Team</strong> &mdash; the cart itself, and the
+            audience/Query&nbsp;Builder functions this plugin builds on.</li>
+        <li><strong>My Zen Cart Host (dbltoe)</strong> &mdash; v3.0.0.</li>
+    </ul>
+    <p>Email Address Exporter v3.0.0. Released under the
+    <a href="https://www.zen-cart.com/license/2_0.txt">GNU GPL v2.0</a>.</p>
+
+    <p>This plugin is free, and so is the cart it runs on. If it saves you some work, please consider
+    <a href="https://docs.zen-cart.com/user/about_us/donate/">supporting the Zen Cart project</a> &mdash;
+    PayPal, Zelle, or GitHub Sponsors. That link goes to the
+    <a href="https://docs.zen-cart.com/">Zen Cart documentation site</a>, which is well worth knowing
+    about if you have not come across it.</p>
+    <p><a href="https://github.com/dbltoe/email-address-exporter">github.com/dbltoe/email-address-exporter</a></p>
+</footer>
+
+</body>
+</html>

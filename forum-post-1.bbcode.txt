@@ -1,0 +1,48 @@
+[SIZE=4][B]Email Address Exporter — support thread (v3.0.0)[/B][/SIZE]
+
+The Email Address Exporter has been around in one form or another since 2005, and has been quietly kept working through a great many Zen Cart releases. What it has never had is a support thread of its own. This is it — if you use the plugin, ask here.
+
+It has also just been rebuilt. v3.0.0 runs on [B]Zen Cart v1.5.8 through v3.0.0 from a single codebase[/B], on [B]PHP 7.4 through 8.x[/B], with no version-specific downloads to choose between. Compatibility was checked against v1.5.8, v2.0.0, v2.2.2 and the v3.0.0 development branch rather than assumed.
+
+
+[SIZE=4][B]New in v3.0.0[/B][/SIZE]
+
+[LIST]
+[*][B]Filters[/B], as an alternative to picking a saved Query Builder audience: country, state/zone and city; registration date range; purchase date range, order status, category (optionally including its subcategories), and product ID. They combine, so you can ask for "Florida customers who bought from Widgets in the first half of the year".
+[*][B]You choose the columns[/B] — sixteen of them, covering name, contact details, the full default address, newsletter flag, email format and account dates.
+[*][B]JSON export[/B], alongside CSV, TXT, XML and HTML.
+[*][B]Consent filters, on by default[/B] — subscribers only, and excluding anyone whose email format is set to NONE. They are what keeps an export limited to people who agreed to be emailed.
+[*][B]Excluded customers are counted, not dropped in silence.[/B] A date or location filter cannot match a customer whose registration date or address was never recorded, so the page now tells you how many that affects before you export.
+[*][B]Telephone numbers can be normalised[/B] to digits only, since customer-entered numbers are rarely consistent.
+[*][B]UTF-8 BOM option for CSV[/B], so Excel stops mangling accented names.
+[*]A two-column layout, nothing smaller than 14px, and all sizes in relative units.
+[/LIST]
+
+
+[SIZE=4][B]Fixed[/B][/SIZE]
+
+Several of these had been quietly wrong for a long time:
+
+[LIST]
+[*]Choosing [B]CSV[/B] silently produced a [B]TXT[/B] file.
+[*]The [B]company and telephone columns were always empty[/B].
+[*]The [B]"All Customers" audience never appeared[/B] in the list.
+[*][B]XML output was not well-formed[/B] and would not parse.
+[*][B]CSV values were not quoted[/B], so a comma or apostrophe in a name corrupted the row. Now RFC 4180, with protection against spreadsheet formula injection.
+[*]A [B]filter containing &amp;[/B] (a town like "Stoke &amp; Trent") silently matched nothing.
+[*]The page opened with a [B]spurious error message[/B] every time.
+[/LIST]
+
+
+[SIZE=4][B]Credit where it is due[/B][/SIZE]
+
+Created by [B]DrByte[/B], who also maintained it across many Zen Cart releases and converted it to the encapsulated plugin format. Later revisions by [B]That Software Guy (swguy)[/B], [B]Swifty8078[/B] and [B]Ooba_Scott[/B]. It builds directly on the audience and Query Builder functions in Zen Cart core, so thanks are owed to the development team as well.
+
+v3.0.0 by [B]My Zen Cart Host (dbltoe)[/B].
+
+
+[SIZE=4][B]Availability[/B][/SIZE]
+
+The release is being packaged and submitted to the Plugins Library now. I will post the download details in this thread as soon as they exist.
+
+Bug reports and feature requests are welcome here in the meantime.
