@@ -103,13 +103,36 @@ if ($action === 'save' && $isPost && !empty($_POST['do_export'])) {
         if ($audienceSelected === '') {
             $messageStack->add(ERROR_PLEASE_SELECT_AUDIENCE, 'error');
         } else {
-            // 'email' matches both the 'email' and 'email,newsletters' rows,
-            // because get_audience_sql_query() filters with LIKE '%category%'.
-            $audience = get_audience_sql_query($audienceSelected, 'email');
-            if (empty($audience['query_string'])) {
+            // Read the saved query directly rather than through
+            // get_audience_sql_query(), for the same reason the dropdown below
+            // is built by hand: that helper matches on query_category LIKE
+            // '%email%', so it never sees an audience filed under 'newsletters'
+            // alone -- and instead of saying so, it falls through to treating
+            // the name as a customer's email address and returns a query that
+            // quietly matches nobody. Reading the row keeps this in step with
+            // the list the admin actually chose from, and makes
+            // ERROR_NO_SUCH_QUERY reachable rather than dead code.
+            // Parameterised with bindVars() rather than concatenated, matching
+            // what core does for its own name lookups (see
+            // zen_register_admin_page()). 'stringIgnoreNull' escapes and adds
+            // its own quotes -- hence none around the placeholder -- and is the
+            // right rule over plain 'string', which maps any value containing
+            // "NULL" to an unquoted null and would silently fail to match an
+            // audience named, say, "NULL addresses".
+            $sql = "SELECT query_string FROM " . TABLE_QUERY_BUILDER .
+                   " WHERE query_name = :queryName:" .
+                   " AND (query_category LIKE '%email%' OR query_category LIKE '%newsletters%')" .
+                   " LIMIT 1";
+            $sql = $db->bindVars($sql, ':queryName:', $audienceSelected, 'stringIgnoreNull');
+            $saved = $db->Execute($sql);
+            if ($saved->EOF) {
                 $messageStack->add(ERROR_NO_SUCH_QUERY, 'error');
             } else {
-                $querySql = $audience['query_string'];
+                // parsed_query_string() expands the TABLE_* and $SESSION:
+                // placeholders Query Builder stores. It lives in
+                // includes/functions/audience.php, which is autoloaded for every
+                // admin page at breakpoint 160 on v1.5.8 through v3.0.0 alike.
+                $querySql = parsed_query_string($saved->fields['query_string']);
                 // A saved query defines its own column list, so take whatever
                 // it returns rather than the checkbox selection.
                 $exportColumns = [];
@@ -139,7 +162,27 @@ if ($action === 'save' && $isPost && !empty($_POST['do_export'])) {
                 $exportColumns = array_keys($result->fields);
             }
 
-            $output = zcEAE_render($format, $result, $exportColumns, $includeHeaders, $phoneFormat);
+            try {
+                $output = zcEAE_render($format, $result, $exportColumns, $includeHeaders, $phoneFormat);
+            } catch (Throwable $e) {
+                // Better a stated failure than a plausible-looking empty file.
+                $messageStack->add_session(sprintf(ERROR_EXPORT_FAILED, $e->getMessage()), 'error');
+                zen_redirect(zen_href_link(FILENAME_EMAIL_EXPORT));
+                // zen_redirect() exits on its own, unless an observer answers
+                // NOTIFY_ZEN_REDIRECT and it returns instead. Be explicit, so
+                // that case cannot fall through to using an unset $output.
+                exit;
+            }
+
+            // This page emits the store's customer contact list in bulk, which
+            // is the most disclosure-sensitive thing the admin can do with it.
+            // Record it where the rest of the admin's audit trail lives.
+            zen_record_admin_activity(
+                'Exported ' . (int)$records . ' customer record(s) as ' . strtoupper($format)
+                . ' from ' . ($mode === 'audience' ? 'saved audience "' . $audienceSelected . '"' : 'custom filters')
+                . '; columns: ' . implode(', ', $exportColumns),
+                'warning'
+            );
 
             if (!empty($formats[$format]['download'])) {
                 $safeName = zcEAE_sanitize_filename($filename, $formats[$format]['ext']);
@@ -229,7 +272,16 @@ if ($filters['country_id'] > 0) {
     }
 }
 
-$categoryOptions = array_merge([['id' => '0', 'text' => TEXT_ANY_CATEGORY]], zen_get_category_tree());
+// zen_get_category_tree() leads with its own "Top" entry, whose id is
+// TOPMOST_CATEGORY_PARENT_ID -- that is, 0, the same value as "-- any category
+// --". Left in, the dropdown carries two options with value 0, and picking
+// "Top" silently means "no category filter at all".
+$categoryOptions = [['id' => '0', 'text' => TEXT_ANY_CATEGORY]];
+foreach (zen_get_category_tree() as $categoryEntry) {
+    if ((int)$categoryEntry['id'] > 0) {
+        $categoryOptions[] = $categoryEntry;
+    }
+}
 
 $statusOptions = [['id' => '0', 'text' => TEXT_ANY_ORDER_STATUS]];
 $statuses = $db->Execute(

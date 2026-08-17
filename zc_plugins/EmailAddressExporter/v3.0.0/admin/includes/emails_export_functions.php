@@ -110,6 +110,17 @@ function zcEAE_sanitize_columns($requested): array
  * matching that against the database would silently return nothing. Decode
  * before using the value in a query. Double-encoding is on, so a value that
  * genuinely contained "&amp;" round-trips correctly through a single decode.
+ *
+ * CAUTION when re-displaying anything this returns. Decoding gives back raw
+ * "<" and ">", and the escaping the admin applies on the way out is thinner
+ * than it looks: zen_draw_input_field() runs values through zen_output_string(),
+ * which with default arguments is strtr($string, ['"' => '&quot;']) -- it
+ * escapes the double quote and NOTHING else. That is sufficient inside a
+ * double-quoted attribute, which is where every current caller puts these
+ * values, and is why the page is safe today. It is not sufficient anywhere
+ * else. Echoing a decoded value into element text, a title attribute built by
+ * hand, or a JavaScript string is an XSS hole; use htmlspecialchars() or
+ * zen_output_string_protected() if you ever need to.
  */
 function zcEAE_decode_input($value): string
 {
@@ -246,8 +257,14 @@ function zcEAE_filter_where(array $filters, string $probe = ''): string
     if (!empty($filters['orders_status'])) {
         $orderConditions[] = "o.orders_status = " . (int)$filters['orders_status'];
     }
+    // Only the two product-level tests need the orders_products join; adding it
+    // for a date- or status-only filter costs a join for nothing, and makes
+    // "never ordered" mean "has no order carrying line items" rather than "has
+    // no order".
+    $needsOrderProducts = false;
     if (!empty($filters['products_id'])) {
         $orderConditions[] = "op.products_id = " . (int)$filters['products_id'];
+        $needsOrderProducts = true;
     }
     if (!empty($filters['categories_ids']) && is_array($filters['categories_ids'])) {
         $catIds = [];
@@ -260,20 +277,32 @@ function zcEAE_filter_where(array $filters, string $probe = ''): string
         if (!empty($catIds)) {
             $orderConditions[] = "op.products_id IN (SELECT ptc.products_id FROM " . TABLE_PRODUCTS_TO_CATEGORIES . " ptc"
                                . " WHERE ptc.categories_id IN (" . implode(',', array_unique($catIds)) . "))";
+            $needsOrderProducts = true;
         }
     }
 
-    // 'has_ordered' alone still needs the EXISTS wrapper, hence the extra test.
-    if (!empty($orderConditions) || !empty($filters['has_ordered'])) {
-        $exists = "SELECT 1 FROM " . TABLE_ORDERS . " o"
-                . " JOIN " . TABLE_ORDERS_PRODUCTS . " op ON op.orders_id = o.orders_id"
-                . " WHERE o.customers_id = c.customers_id";
+    // One qualifying-order subquery, tested either way round. 'has_ordered' and
+    // 'never_ordered' alone still need it, hence the extra tests.
+    //
+    // 'never_ordered' is checked BEFORE the positive case and negates the same
+    // subquery, so it combines with the filters above as you would read it:
+    // "never ordered" plus a category means "has never ordered from that
+    // category". Testing it afterwards -- as an elseif -- meant any other
+    // purchase filter took the EXISTS branch first, so ticking "never ordered"
+    // and choosing a category, order status or date exported precisely the
+    // customers who HAD bought, with no warning.
+    if (!empty($orderConditions) || !empty($filters['has_ordered']) || !empty($filters['never_ordered'])) {
+        $exists = "SELECT 1 FROM " . TABLE_ORDERS . " o";
+        if ($needsOrderProducts) {
+            $exists .= " JOIN " . TABLE_ORDERS_PRODUCTS . " op ON op.orders_id = o.orders_id";
+        }
+        $exists .= " WHERE o.customers_id = c.customers_id";
         if (!empty($orderConditions)) {
             $exists .= ' AND ' . implode(' AND ', $orderConditions);
         }
-        $sql .= " AND EXISTS (" . $exists . ")";
-    } elseif (!empty($filters['never_ordered'])) {
-        $sql .= " AND NOT EXISTS (SELECT 1 FROM " . TABLE_ORDERS . " o WHERE o.customers_id = c.customers_id)";
+        $sql .= !empty($filters['never_ordered'])
+            ? " AND NOT EXISTS (" . $exists . ")"
+            : " AND EXISTS (" . $exists . ")";
     }
 
     return $sql;
@@ -479,6 +508,13 @@ function zcEAE_cell(array $row, string $key, array $phoneKeys, string $phoneMode
  * @param iterable $rows      query result (queryFactoryResult is Iterator on both carts)
  * @param array    $columns   ordered column keys, used as headings
  * @param string   $phoneMode 'raw' or 'digits'; see zcEAE_format_phone()
+ *
+ * @throws RuntimeException if the result cannot be encoded in the requested
+ *         format. Only the 'json' branch can raise this, and only for data
+ *         json_encode() rejects outright -- returning the partial string
+ *         instead would hand the caller a file that looks complete and is not.
+ *         Callers must either catch it or let it surface; emails_export.php
+ *         catches it and reports ERROR_EXPORT_FAILED without writing a file.
  */
 function zcEAE_render(string $format, $rows, array $columns, bool $includeHeaders, string $phoneMode = 'raw'): string
 {
@@ -507,8 +543,14 @@ function zcEAE_render(string $format, $rows, array $columns, bool $includeHeader
             foreach ($rows as $row) {
                 $fields = [];
                 foreach ($columns as $key) {
+                    // Tab-delimited files get opened in Excel just as often as
+                    // CSV, so the same formula guard applies. Defuse first: it
+                    // tests the leading character, and the whitespace collapse
+                    // below would otherwise turn a leading tab into a space and
+                    // hide it.
+                    $value = zcEAE_defuse_formula(zcEAE_cell($row, $key, $phoneKeys, $phoneMode));
                     // Tabs/newlines inside a value would corrupt the layout.
-                    $fields[] = str_replace(["\t", "\r", "\n"], ' ', zcEAE_cell($row, $key, $phoneKeys, $phoneMode));
+                    $fields[] = str_replace(["\t", "\r", "\n"], ' ', $value);
                 }
                 $out .= implode("\t", $fields) . "\n";
             }
@@ -566,8 +608,19 @@ function zcEAE_render(string $format, $rows, array $columns, bool $includeHeader
                 }
                 $records[] = $record;
             }
-            $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-            $out .= json_encode($records, $flags);
+            // JSON is defined as UTF-8, but CHARSET is iso-8859-1 on plenty of
+            // upgraded stores, and json_encode() reports data it cannot encode
+            // by returning false -- which concatenates as '' and hands the admin
+            // a zero-byte file with a success message. Substitute the offending
+            // sequences (PHP 7.2+, so always present on this plugin's 7.4 floor)
+            // and treat anything still failing as an error worth showing.
+            $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                   | JSON_INVALID_UTF8_SUBSTITUTE;
+            $encoded = json_encode($records, $flags);
+            if ($encoded === false) {
+                throw new RuntimeException('json_encode() failed: ' . json_last_error_msg());
+            }
+            $out .= $encoded;
             break;
     }
 
