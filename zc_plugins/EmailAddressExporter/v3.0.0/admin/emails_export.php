@@ -112,12 +112,19 @@ if ($action === 'save' && $isPost && !empty($_POST['do_export'])) {
             // quietly matches nobody. Reading the row keeps this in step with
             // the list the admin actually chose from, and makes
             // ERROR_NO_SUCH_QUERY reachable rather than dead code.
-            $saved = $db->Execute(
-                "SELECT query_string FROM " . TABLE_QUERY_BUILDER .
-                " WHERE query_name = '" . zen_db_input($audienceSelected) . "'" .
-                " AND (query_category LIKE '%email%' OR query_category LIKE '%newsletters%')" .
-                " LIMIT 1"
-            );
+            // Parameterised with bindVars() rather than concatenated, matching
+            // what core does for its own name lookups (see
+            // zen_register_admin_page()). 'stringIgnoreNull' escapes and adds
+            // its own quotes -- hence none around the placeholder -- and is the
+            // right rule over plain 'string', which maps any value containing
+            // "NULL" to an unquoted null and would silently fail to match an
+            // audience named, say, "NULL addresses".
+            $sql = "SELECT query_string FROM " . TABLE_QUERY_BUILDER .
+                   " WHERE query_name = :queryName:" .
+                   " AND (query_category LIKE '%email%' OR query_category LIKE '%newsletters%')" .
+                   " LIMIT 1";
+            $sql = $db->bindVars($sql, ':queryName:', $audienceSelected, 'stringIgnoreNull');
+            $saved = $db->Execute($sql);
             if ($saved->EOF) {
                 $messageStack->add(ERROR_NO_SUCH_QUERY, 'error');
             } else {

@@ -508,6 +508,13 @@ function zcEAE_cell(array $row, string $key, array $phoneKeys, string $phoneMode
  * @param iterable $rows      query result (queryFactoryResult is Iterator on both carts)
  * @param array    $columns   ordered column keys, used as headings
  * @param string   $phoneMode 'raw' or 'digits'; see zcEAE_format_phone()
+ *
+ * @throws RuntimeException if the result cannot be encoded in the requested
+ *         format. Only the 'json' branch can raise this, and only for data
+ *         json_encode() rejects outright -- returning the partial string
+ *         instead would hand the caller a file that looks complete and is not.
+ *         Callers must either catch it or let it surface; emails_export.php
+ *         catches it and reports ERROR_EXPORT_FAILED without writing a file.
  */
 function zcEAE_render(string $format, $rows, array $columns, bool $includeHeaders, string $phoneMode = 'raw'): string
 {
