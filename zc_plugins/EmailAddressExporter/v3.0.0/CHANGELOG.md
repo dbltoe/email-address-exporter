@@ -6,6 +6,70 @@ Built on the work of DrByte (original author), That Software Guy (swguy),
 Swifty8078, Ooba_Scott, and the Zen Cart Development Team. See the README for
 full credits.
 
+## Unreleased
+
+Corrections to v3.0.0. The version directory and `pluginVersion` are left at
+`v3.0.0` deliberately &mdash; bumping them is a release decision, not part of these
+fixes.
+
+### Fixed
+
+- **"Only customers who have never placed an order" returned the opposite set.**
+  The test sat in an `elseif` after the positive case, so any other purchase
+  filter &mdash; an order status, a product ID, a category, or either purchase date
+  &mdash; claimed the `EXISTS` branch first. Ticking "never ordered" and choosing a
+  category exported exactly the customers who *had* bought from it, and reported
+  success. The negative test now runs first and negates the same subquery, so
+  the two combine as they read: "never ordered" plus a category means "has never
+  ordered from that category". Only the has/never pair was previously guarded,
+  and that guard is unchanged.
+- **JSON export could write a zero-byte file and report success.**
+  `json_encode()` returns `false` for data it cannot encode, which concatenated
+  as `''`. JSON is defined as UTF-8, so any store still running an
+  `iso-8859-1` `CHARSET` hit this the first time an accented name appeared in
+  the results. Invalid sequences are now substituted, and a genuine encoding
+  failure raises an error the admin can see instead of a plausible-looking empty
+  download.
+- **Formula-injection protection covered CSV but not TXT.** Tab-delimited files
+  are opened in Excel just as often, and a leading `=` was passed through
+  untouched. The guard now runs before tabs are collapsed to spaces, so a value
+  beginning with a tab does not lose the character that marked it dangerous.
+- **The category dropdown carried two options with the value `0`.**
+  `zen_get_category_tree()` leads with its own "Top" entry, whose id is
+  `TOPMOST_CATEGORY_PARENT_ID` &mdash; also `0` &mdash; so it sat alongside
+  "-- any category --" and selecting it silently meant "no category filter".
+- **`ERROR_NO_SUCH_QUERY` was unreachable, and audiences filed under
+  `newsletters` alone exported nothing.** `get_audience_sql_query()` matches on
+  `query_category LIKE '%email%'`, and on a miss falls through to treating the
+  name as a customer's email address &mdash; returning a valid query that matches
+  nobody rather than reporting the problem. The saved query is now read
+  directly, for the same reason the audience dropdown already was, which keeps
+  the two in step and makes the error message reachable.
+- The `orders_products` join is only added when a product or category test
+  actually needs it, rather than on every purchase filter.
+
+### Added
+
+- **Bulk exports are recorded via `zen_record_admin_activity()`** (present on
+  v1.5.8 through v3.0.0), noting the record count, format, source and column
+  list. This page emits the store's customer contact list in one action, which
+  is the most disclosure-sensitive thing the admin does with it, and it was the
+  only such action leaving no audit trail.
+- Unit tests for `zcEAE_filter_where()` and `zcEAE_render()` &mdash; the two
+  functions the existing suite did not reach, and where all of the above sat.
+  The cart constants and `zen_db_input()` are stubbed, so they stay
+  database-free and as fast as the rest.
+
+### Security
+
+- No change in behaviour, but a caution added to `zcEAE_decode_input()`. It
+  deliberately reverses `AdminRequestSanitizer`, which is the correct fix for
+  the `&` bug, and every current caller re-displays the result inside a
+  double-quoted attribute where `zen_output_string()`'s quote escaping is
+  sufficient. That escaping is `strtr($string, ['"' => '&quot;'])` and nothing
+  more &mdash; it does not touch `<` or `>` &mdash; so the safety depends on the
+  attribute context and does not survive being echoed anywhere else.
+
 ## v3.0.0
 
 Compatible with Zen Cart v1.5.8 through v3.0.0, on PHP 7.4 through 8.x, from a

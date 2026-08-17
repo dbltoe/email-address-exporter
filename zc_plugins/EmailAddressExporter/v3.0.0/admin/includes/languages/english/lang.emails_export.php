@@ -96,6 +96,9 @@ $define = [
     'ERROR_NO_COLUMNS_SELECTED'       => 'Please select at least one column to export.',
     'ERROR_NO_RECORDS_FOUND'          => 'No records matched those filters. Nothing was exported.',
     'ERROR_CONFLICTING_ORDER_FILTERS' => 'You cannot select both "has placed at least one order" and "has never placed an order".',
+    // %s is the underlying error. Shown instead of writing a file that would
+    // look complete but be empty.
+    'ERROR_EXPORT_FAILED'             => 'The export could not be generated and no file was written (%s). If you chose JSON, try CSV instead: JSON requires UTF-8 data.',
 
     'TEXT_INSTRUCTIONS' => '
 <p>Export customer email addresses to a file you can import into a mailing tool, spreadsheet or address book.</p>
