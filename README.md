@@ -4,7 +4,7 @@
 **Designed for:** Zen Cart v1.5.8 through v3.0.0 &mdash; one codebase, no version-specific builds
 **PHP:** 7.4 through 8.x
 
-**Current version:** v3.0.0
+**Current version:** v3.0.1
 
 ## Credits
 
@@ -18,7 +18,7 @@ This plugin is the work of a good many people over about twenty years:
 - **Ooba_Scott** &mdash; later revisions.
 - **The Zen Cart Development Team** &mdash; the cart itself, and the audience /
   Query Builder functions this plugin builds on.
-- **My Zen Cart Host (dbltoe)** &mdash; v3.0.0.
+- **My Zen Cart Host (dbltoe)** &mdash; v3.0.0 and v3.0.1.
 
 Please support the Zen Cart project:
 https://docs.zen-cart.com/user/about_us/donate/ &mdash; thank you!
@@ -80,7 +80,7 @@ or edited inside `YOUR_ADMIN`. Back up your database and files first, as with
 any change.
 
 1. This download's own root contains a `zc_plugins/` folder, with this plugin's
-   files inside it at `zc_plugins/EmailAddressExporter/v3.0.0/`. Upload that
+   files inside it at `zc_plugins/EmailAddressExporter/v3.0.1/`. Upload that
    entire `zc_plugins/` folder into your store's root, **merging** it into the
    `zc_plugins/` folder that is already there.
 2. In admin, go to **Modules > Plugin Manager**, find *Export Email Addresses*,
@@ -92,7 +92,7 @@ should now contain an `EmailAddressExporter` folder alongside whatever other
 plugins you already have, so that this file exists:
 
 ```
-<your store root>/zc_plugins/EmailAddressExporter/v3.0.0/manifest.php
+<your store root>/zc_plugins/EmailAddressExporter/v3.0.1/manifest.php
 ```
 
 > **The one mistake worth checking for:** if you end up with
@@ -102,17 +102,24 @@ plugins you already have, so that this file exists:
 > right.
 
 Already running an earlier release? Uninstall it in Plugin Manager first, then
-install v3.0.0. No data is affected &mdash; this plugin stores nothing of its own.
+install v3.0.1. No data is affected &mdash; this plugin stores nothing of its own.
 
 ## Use
 
 Log into admin, click **Tools**, then **Export Email Addresses**.
 
 Full documentation is in
-[`zc_plugins/EmailAddressExporter/v3.0.0/readme.html`](zc_plugins/EmailAddressExporter/v3.0.0/readme.html),
+[`zc_plugins/EmailAddressExporter/v3.0.1/readme.html`](zc_plugins/EmailAddressExporter/v3.0.1/readme.html),
 which is also linked from the Plugin Manager panel.
 
 ---
+
+## v3.0.1
+
+Hardening only, no functional change. The admin page now carries the
+`IS_ADMIN_FLAG` guard, so a direct request to the file on a host that does not
+honour `zc_plugins/.htaccess` is refused rather than emitting a path-disclosing
+fatal error. Adds unit tests for the helper functions.
 
 ## v3.0.0
 
@@ -123,5 +130,5 @@ Customers" audience never appeared, XML output was not well-formed, and
 free-text filters containing `&` matched nothing. Added RFC 4180 CSV quoting,
 CSV-injection protection, and safe filename handling.
 
-See [CHANGELOG.md](zc_plugins/EmailAddressExporter/v3.0.0/CHANGELOG.md) for the
+See [CHANGELOG.md](zc_plugins/EmailAddressExporter/v3.0.1/CHANGELOG.md) for the
 full list.

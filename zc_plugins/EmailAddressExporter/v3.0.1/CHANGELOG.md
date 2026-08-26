@@ -6,6 +6,42 @@ Built on the work of DrByte (original author), That Software Guy (swguy),
 Swifty8078, Ooba_Scott, and the Zen Cart Development Team. See the README for
 full credits.
 
+## v3.0.1
+
+Hardening only. No functional change, and nothing to reconfigure — upgrading is
+worthwhile but not urgent.
+
+### Fixed
+
+- **The admin page now refuses to run unless the admin has been bootstrapped.**
+  `admin/emails_export.php` gained the `IS_ADMIN_FLAG` guard that the bundled
+  DisplayLogs plugin uses.
+
+  On the normal path this costs nothing: the page is reached as
+  `admin/index.php?cmd=emails_export`, and `index.php` loads
+  `admin/includes/application_bootstrap.php` — which defines `IS_ADMIN_FLAG` —
+  before routing there, on v1.5.8, v2.0.0, v2.2.2 and v3.0.0 alike.
+
+  It matters for a direct request. `zc_plugins/` is reachable over the web on any
+  host that does not honour the shipped `zc_plugins/.htaccess`: nginx reads no
+  `.htaccess` at all, and Apache ignores it under `AllowOverride None`. Without
+  the guard, such a request fell into the page's relative
+  `require 'includes/application_top.php'`, failed to resolve it, and emitted a
+  fatal error disclosing the filesystem path. No code execution and no data
+  exposure, but no reason to leak the path either.
+
+  Note the guard rule differs by location: a classic page in `/admin/` must
+  **not** carry it, because such a page can be requested directly and
+  self-bootstraps through its own `require application_top.php`. Core's own
+  admin pages have no guard for exactly that reason.
+
+### Added
+
+- Unit tests for the pure helper functions, discovered by Zen Cart v3.0.0's
+  plugin test runner at `tests/Unit/`. Run with
+  `composer tests-plugin -- --plugin EmailAddressExporter`. They are in the
+  repository but deliberately not in the distributed package.
+
 ## v3.0.0
 
 Compatible with Zen Cart v1.5.8 through v3.0.0, on PHP 7.4 through 8.x, from a

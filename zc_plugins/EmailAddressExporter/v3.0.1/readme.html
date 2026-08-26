@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Email Address Exporter v3.0.0 &mdash; Documentation</title>
+<title>Email Address Exporter v3.0.1 &mdash; Documentation</title>
 <style>
     :root { color-scheme: light dark; }
     body {
@@ -38,7 +38,7 @@
 <body>
 
 <h1>Email Address Exporter</h1>
-<p class="sub">Version 3.0.0 &mdash; for Zen Cart v1.5.8 through v3.0.0</p>
+<p class="sub">Version 3.0.1 &mdash; for Zen Cart v1.5.8 through v3.0.0</p>
 
 <p>Exports customer email addresses and contact details from your Zen Cart store to a file you
 can import into a mailing tool, spreadsheet, or address book.</p>
@@ -64,7 +64,7 @@ Source and releases are on
 <ol>
     <li>Back up your store's database and files, as with any change.</li>
     <li>This download's own root contains a <code>zc_plugins/</code> folder, with this plugin's files
-        inside it at <code>zc_plugins/EmailAddressExporter/v3.0.0/</code>. Upload that entire
+        inside it at <code>zc_plugins/EmailAddressExporter/v3.0.1/</code>. Upload that entire
         <code>zc_plugins/</code> folder into <strong>your store's root</strong> &mdash; the folder that also
         holds <code>YOUR_ADMIN</code>, <code>includes/</code>, <code>email/</code> and <code>logs/</code>
         &mdash; <strong>merging</strong> it into the <code>zc_plugins/</code> folder already there.</li>
@@ -77,7 +77,7 @@ Source and releases are on
 <p><strong>How to confirm it landed correctly:</strong> your store's <code>zc_plugins/</code> directory
 should now contain an <code>EmailAddressExporter</code> folder alongside whatever other plugins you
 already have, so that this file exists:</p>
-<pre>&lt;your store root&gt;/zc_plugins/EmailAddressExporter/v3.0.0/manifest.php</pre>
+<pre>&lt;your store root&gt;/zc_plugins/EmailAddressExporter/v3.0.1/manifest.php</pre>
 
 <div class="warn">
     <strong>The one mistake worth checking for:</strong> if you end up with
@@ -92,7 +92,7 @@ safe to remove again later.</p>
 
 <div class="note">
     <strong>Already running an earlier release?</strong> Uninstall it in Plugin Manager first, then
-    install v3.0.0. Your data is unaffected &mdash; this plugin stores nothing of its own.
+    install v3.0.1. Your data is unaffected &mdash; this plugin stores nothing of its own.
 </div>
 
 <h2>Using the page</h2>
@@ -222,8 +222,13 @@ Untick it only if the tool you are importing into dislikes a BOM.</p>
     <li>The <em>state</em> column falls back to the zone name when the free-text state field is empty.</li>
 </ul>
 
-<h2>What v3.0.0 brings</h2>
-<p>See <code>CHANGELOG.md</code> for the full list. The headlines:</p>
+<h2>What v3.0 brings</h2>
+<p>See <code>CHANGELOG.md</code> for the full list.</p>
+<p><strong>v3.0.1</strong> is hardening only, with no functional change: the admin page now refuses to
+run unless the admin has been bootstrapped, so a direct request to the file on a host that does not
+honour the shipped <code>zc_plugins/.htaccess</code> is turned away rather than emitting a
+path-disclosing error.</p>
+<p><strong>v3.0.0</strong> was the rebuild. The headlines:</p>
 <ul>
     <li>New filtering by country, state, city, registration date, purchase date, order status, category and product.</li>
     <li>You now choose which columns are exported.</li>
@@ -247,9 +252,9 @@ Untick it only if the tool you are importing into dislikes a BOM.</p>
         <li><strong>Ooba_Scott</strong> &mdash; later revisions.</li>
         <li><strong>The Zen Cart Development Team</strong> &mdash; the cart itself, and the
             audience/Query&nbsp;Builder functions this plugin builds on.</li>
-        <li><strong>My Zen Cart Host (dbltoe)</strong> &mdash; v3.0.0.</li>
+        <li><strong>My Zen Cart Host (dbltoe)</strong> &mdash; v3.0.0 and v3.0.1.</li>
     </ul>
-    <p>Email Address Exporter v3.0.0. Released under the
+    <p>Email Address Exporter v3.0.1. Released under the
     <a href="https://www.zen-cart.com/license/2_0.txt">GNU GPL v2.0</a>.</p>
 
     <p>This plugin is free, and so is the cart it runs on. If it saves you some work, please consider

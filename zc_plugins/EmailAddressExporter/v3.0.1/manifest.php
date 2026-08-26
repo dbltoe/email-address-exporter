@@ -44,7 +44,7 @@ $eaeDownloadUrl = 'https://www.zen-cart.com/downloads.php?do=file&id=6';
 // surfaced as a "Release Notes" link in the description below, which is the only field
 // that actually reaches a store owner in the Plugin Manager panel.
 //
-$eaeReleasesUrl = 'https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.0';
+$eaeReleasesUrl = 'https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.1';
 
 // -----
 // The Zen Cart forum's support thread for this plugin.
@@ -107,7 +107,7 @@ $eaeCredits =
     . '</em></div>';
 
 return [
-    'pluginVersion' => 'v3.0.0',
+    'pluginVersion' => 'v3.0.1',
     'pluginName' => 'Export Email Addresses',
     'pluginDescription' =>
         'Export customer email addresses and contact details to CSV, TXT, XML, JSON or HTML. '

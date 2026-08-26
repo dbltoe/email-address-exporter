@@ -22,6 +22,25 @@
  * @var queryFactory $db
  */
 
+// -----
+// Refuse to run unless the admin has already been bootstrapped.
+//
+// This page is reached as admin/index.php?cmd=emails_export, and index.php loads
+// admin/includes/application_bootstrap.php -- which defines IS_ADMIN_FLAG --
+// before it routes here, on v1.5.8, v2.0.0, v2.2.2 and v3.0.0 alike. So the
+// constant is always set on the legitimate path and this costs nothing.
+//
+// It matters for the illegitimate one. This file sits under zc_plugins/, which
+// is reachable over the web on any host that does not honour the shipped
+// zc_plugins/.htaccess -- nginx reads no .htaccess at all, and Apache ignores it
+// under AllowOverride None. Without this, a direct request would fall into the
+// relative require below, fail to find it, and emit a fatal error disclosing the
+// filesystem path. Same guard the bundled DisplayLogs plugin uses.
+//
+if (!defined('IS_ADMIN_FLAG') || IS_ADMIN_FLAG !== true) {
+    exit('Illegal Access');
+}
+
 require 'includes/application_top.php';
 
 require_once __DIR__ . '/includes/emails_export_functions.php';
