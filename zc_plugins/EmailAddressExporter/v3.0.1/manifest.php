@@ -125,7 +125,7 @@ return [
     // releases; it must match the id in $eaeDownloadUrl above.
     'pluginId' => 6,
     // Recorded as metadata by the Plugin Manager; it does not gate installation.
-    'zcVersions' => ['v158', 'v200', 'v201', 'v210', 'v220', 'v221', 'v222', 'v300'],
+    'zcVersions' => ['v158', 'v200', 'v201', 'v210', 'v220', 'v221', 'v222', 'v230', 'v300'],
     // Not read by any supported cart version; see the note above $eaeReleasesUrl.
     'changelog' => ($eaeReleasesUrl !== '') ? $eaeReleasesUrl : 'CHANGELOG.md',
     'github_repo' => $eaeGithubUrl,
