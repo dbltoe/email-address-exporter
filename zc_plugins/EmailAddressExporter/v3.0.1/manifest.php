@@ -72,25 +72,17 @@ $eaeLinks =
     . '<a href="' . $eaeGithubUrl . '" target="_blank" rel="noopener noreferrer"'
     . ' class="btn btn-primary" role="button"'
     . ' style="margin:0 ' . $eaeButtonGap . ' 0 0">GitHub</a>'
+    // The support thread, a third button (every free dbltoe plugin has one, 2026-10-05).
+    // Renders nothing while $eaeForumUrl is empty.
+    . ($eaeForumUrl !== ''
+        ? '<a href="' . $eaeForumUrl . '" target="_blank" rel="noopener noreferrer"'
+          . ' class="btn btn-primary" role="button"'
+          . ' style="margin:0 ' . $eaeButtonGap . ' 0 0">Forum Support Thread</a>'
+        : '')
     . '</div>';
 
-// -----
-// The support thread, as an ordinary link rather than a third button. Install, Uninstall,
-// Disable, Read Me and GitHub are all things the owner does with the plugin; asking for
-// help is a different kind of act, and giving it the same weight as Uninstall would be
-// misleading. Renders nothing while $eaeForumUrl is empty.
-//
-$eaeForumLink = '';
-if ($eaeForumUrl !== '') {
-    $eaeForumLink =
-        '<div style="margin:8px 0 0;padding:0 0 0 ' . $eaeButtonGap . '">'
-        . '<a href="' . $eaeForumUrl . '" target="_blank" rel="noopener noreferrer">'
-        . 'Forum Support Thread</a>'
-        . '</div>';
-}
-
-// Release notes, as a plain link for the same reason as the forum thread: it is
-// reference material, not something the owner does to the plugin.
+// Release notes, as a plain link: it is reference material, not something the owner
+// does to the plugin.
 $eaeReleasesLink = '';
 if ($eaeReleasesUrl !== '') {
     $eaeReleasesLink =
@@ -115,7 +107,6 @@ return [
         . 'the customer has bought - or from a saved audience in Query Builder, and choose '
         . 'exactly which columns land in the file.'
         . $eaeLinks
-        . $eaeForumLink
         . $eaeReleasesLink
         . $eaeCredits,
     // Shown as the Author in Plugin Manager, and stored in
