@@ -2,30 +2,19 @@
 
 Zen Cart admin tool for exporting customer email addresses and contact details.
 
-- **Version:** v3.0.1
+- **Version:** v3.0.2
 - **Zen Cart:** v1.5.8 through v3.0.0 (one codebase)
-- **PHP:** 7.4 through 8.x
-
-## Credits
-
-- **DrByte** — original author, and the long-time maintainer who carried it
-  through successive Zen Cart releases and converted it to the encapsulated
-  plugin structure.
-- **That Software Guy (swguy)** — later revisions.
-- **Swifty8078** — later revisions.
-- **Ooba_Scott** — later revisions.
-- **The Zen Cart Development Team** — the cart itself, and the audience /
-  Query Builder functions this plugin builds on.
-- **My Zen Cart Host (dbltoe)** — v3.0.0 and v3.0.1.
+- **PHP:** 7.4 through 8.5
+- **License:** GNU General Public License, version 3
 
 ## Documentation
 
 Full documentation ships with the plugin:
 
-- [`v3.0.1/readme.html`](v3.0.1/readme.html) — usage guide, also linked from the
-  Plugin Manager panel once installed.
-- [`v3.0.1/CHANGELOG.md`](v3.0.1/CHANGELOG.md) — what changed, including the
-  bugs fixed in v3.0.0 and v3.0.1.
+- `v3.0.2/README.md` — the usage guide. Once the plugin is installed, a
+  superuser can open it from the **ReadMe** button in Plugin Manager. The same
+  file is at the root of the download.
+- `v3.0.2/CHANGELOG.md` — what changed in each version.
 
 ## Install
 
@@ -38,7 +27,7 @@ Upload the `zc_plugins/` folder from the download into your store's root,
 with:
 
 ```
-<your store root>/zc_plugins/EmailAddressExporter/v3.0.1/manifest.php
+<your store root>/zc_plugins/EmailAddressExporter/v3.0.2/manifest.php
 ```
 
 Then install it from **Modules > Plugin Manager**. The page appears under

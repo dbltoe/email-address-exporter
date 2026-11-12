@@ -2,9 +2,20 @@
 
 All notable changes to the Email Address Exporter plugin.
 
-Built on the work of DrByte (original author), That Software Guy (swguy),
-Swifty8078, Ooba_Scott, and the Zen Cart Development Team. See the README for
-full credits.
+## v3.0.2
+
+Released 2026-11-11.
+
+- **License: GNU General Public License, version 3** (was version 2).
+- **readme.html is replaced by README.md.** The ReadMe button in Plugin
+  Manager opens it inside the admin, for superusers only, in its own window
+  (`index.php?cmd=email_address_exporter_readme`); it is no longer a public
+  file under `zc_plugins/`. The same README.md is at the root of the download.
+- Nothing changes on the export page or in the files it produces.
+
+Upgrading: uninstall the earlier release in Admin > Modules > Plugin Manager,
+then install v3.0.2. No data is affected; this plugin stores nothing of its
+own.
 
 ## v3.0.1
 

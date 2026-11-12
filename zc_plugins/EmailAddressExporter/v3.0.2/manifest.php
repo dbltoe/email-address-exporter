@@ -10,18 +10,25 @@
  * @author Ooba_Scott
  * @author That Software Guy (swguy)
  * @author My Zen Cart Host (dbltoe) - v3.0.0
- * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 // -----
-// Read Me / GitHub buttons shown in the Plugin Manager's info box, matching the pattern
-// established for Social Contact Footer (f:/Social_Contact_Footer) and Admin Add Customer.
-// The Read Me URL is derived from this file's own on-disk location (rather than a hardcoded
-// version string) so it can't go stale on a future version bump. Zen Cart's shipped
-// zc_plugins/.htaccess denies everything then explicitly re-allows .html, so readme.html
-// is reachable by design.
+// ReadMe / GitHub / Forum Support Thread buttons shown in the Plugin Manager's info box.
 //
-$eaePluginRelativeDir = basename(dirname(__DIR__)) . '/' . basename(__DIR__);
-$eaeReadmeUrl = (defined('DIR_WS_CATALOG') ? DIR_WS_CATALOG : '/') . 'zc_plugins/' . $eaePluginRelativeDir . '/readme.html';
+// ReadMe opens this plugin's README.md through its own admin page
+// (admin/email_address_exporter_readme.php), behind the admin login and for superusers
+// only, in its own window. The link is relative to the admin and carries no version
+// folder, so it can't go stale on a version bump.
+//
+// The button is shown only to superusers. The check is guarded because Zen Cart 3.0.0
+// reads manifests early on every admin page, before SUPERUSER_PROFILE exists; core's
+// zen_is_superuser() would die on the undefined constant there.
+//
+$eaeReadmeUrl = 'index.php?cmd=email_address_exporter_readme';
+$eaeShowReadme = true;
+if (function_exists('zen_is_superuser') && defined('SUPERUSER_PROFILE')) {
+    $eaeShowReadme = zen_is_superuser();
+}
 $eaeGithubUrl = 'https://github.com/dbltoe/email-address-exporter';
 
 // -----
@@ -44,7 +51,7 @@ $eaeDownloadUrl = 'https://www.zen-cart.com/downloads.php?do=file&id=6';
 // surfaced as a "Release Notes" link in the description below, which is the only field
 // that actually reaches a store owner in the Plugin Manager panel.
 //
-$eaeReleasesUrl = 'https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.1';
+$eaeReleasesUrl = 'https://github.com/dbltoe/email-address-exporter/releases/tag/v3.0.2';
 
 // -----
 // The Zen Cart forum's support thread for this plugin.
@@ -66,9 +73,11 @@ $eaeForumUrl = 'https://www.zen-cart.com/showthread.php/231172-Email-Address-Exp
 $eaeButtonGap = '6px';
 $eaeLinks =
     '<div style="margin:10px 0 0;padding:0 0 0 ' . $eaeButtonGap . '">'
-    . '<a href="' . $eaeReadmeUrl . '" target="_blank" rel="noopener noreferrer"'
-    . ' class="btn btn-primary" role="button"'
-    . ' style="margin:0 ' . $eaeButtonGap . ' 0 0">Read Me</a>'
+    . ($eaeShowReadme
+        ? '<a href="' . $eaeReadmeUrl . '" target="_blank" rel="noopener noreferrer"'
+          . ' class="btn btn-primary" role="button"'
+          . ' style="margin:0 ' . $eaeButtonGap . ' 0 0">ReadMe</a>'
+        : '')
     . '<a href="' . $eaeGithubUrl . '" target="_blank" rel="noopener noreferrer"'
     . ' class="btn btn-primary" role="button"'
     . ' style="margin:0 ' . $eaeButtonGap . ' 0 0">GitHub</a>'
@@ -92,14 +101,8 @@ if ($eaeReleasesUrl !== '') {
         . '</div>';
 }
 
-$eaeCredits =
-    '<div style="margin:8px 0 0;padding:0 0 0 ' . $eaeButtonGap . '"><em>'
-    . 'Originally created by DrByte, with revisions by Swifty8078, Ooba_Scott '
-    . 'and That Software Guy (swguy).'
-    . '</em></div>';
-
 return [
-    'pluginVersion' => 'v3.0.1',
+    'pluginVersion' => 'v3.0.2',
     'pluginName' => 'Export Email Addresses',
     'pluginDescription' =>
         'Export customer email addresses and contact details to CSV, TXT, XML, JSON or HTML. '
@@ -107,8 +110,7 @@ return [
         . 'the customer has bought - or from a saved audience in Query Builder, and choose '
         . 'exactly which columns land in the file.'
         . $eaeLinks
-        . $eaeReleasesLink
-        . $eaeCredits,
+        . $eaeReleasesLink,
     // Shown as the Author in Plugin Manager, and stored in
     // plugin_control.author / plugin_control_versions.author (varchar(64)).
     'pluginAuthor' => 'My Zen Cart Host (dbltoe)',

@@ -15,7 +15,7 @@
  * @author Ooba_Scott
  * @author That Software Guy (swguy)
  * @author My Zen Cart Host (dbltoe) - v3.0.0
- * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined('FILENAME_EMAIL_EXPORT') || define('FILENAME_EMAIL_EXPORT', 'emails_export');
