@@ -30,9 +30,15 @@ final class ReadmeAndManifestTest extends TestCase
     private const README_PAGE = 'admin/email_address_exporter_readme.php';
     private const LICENSE_LINE = ' * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0';
 
+    /**
+     * This test lives at the repository root (tests/), outside the plugin, so it isn't in
+     * the download. The plugin's one version folder is found from there.
+     */
     private static function pluginDir(): string
     {
-        return dirname(__DIR__, 2);
+        $dirs = glob(dirname(__DIR__) . '/zc_plugins/EmailAddressExporter/v*', GLOB_ONLYDIR) ?: [];
+        self::assertCount(1, $dirs, 'exactly one version folder');
+        return str_replace('\\', '/', $dirs[0]);
     }
 
     /**
