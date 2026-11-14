@@ -11,7 +11,7 @@
  * with IS_ADMIN_FLAG, so that has to be defined before it is required.
  *
  * @copyright Portions Copyright 2026 My Zen Cart Host (dbltoe)
- * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
+ * @license  https://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License v2.0
  */
 
 declare(strict_types=1);

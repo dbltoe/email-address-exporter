@@ -6,7 +6,6 @@ All notable changes to the Email Address Exporter plugin.
 
 Released 2026-11-11.
 
-- **License: GNU General Public License, version 3** (was version 2).
 - **readme.html is replaced by README.md.** The ReadMe button in Plugin
   Manager opens it inside the admin, for superusers only, in its own window
   (`index.php?cmd=email_address_exporter_readme`); it is no longer a public

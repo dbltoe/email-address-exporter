@@ -8,7 +8,7 @@
  * @author Ooba_Scott
  * @author That Software Guy (swguy)
  * @author My Zen Cart Host (dbltoe) - v3.0.0
- * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
+ * @license  https://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License v2.0
  */
 
 $define = [

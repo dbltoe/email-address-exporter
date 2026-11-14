@@ -16,7 +16,7 @@
  * because each needs its own zen_is_superuser().
  *
  * @copyright Portions Copyright 2026 My Zen Cart Host (dbltoe)
- * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
+ * @license  https://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License v2.0
  */
 
 declare(strict_types=1);
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 final class ReadmeAndManifestTest extends TestCase
 {
     private const README_PAGE = 'admin/email_address_exporter_readme.php';
-    private const LICENSE_LINE = ' * @license  https://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0';
+    private const LICENSE_LINE = ' * @license  https://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License v2.0';
 
     /**
      * This test lives at the repository root (tests/), outside the plugin, so it isn't in
@@ -119,7 +119,7 @@ final class ReadmeAndManifestTest extends TestCase
         }
         self::assertFileDoesNotExist($root . '/readme.html');
         self::assertSame(md5_file(self::pluginDir() . '/README.md'), md5_file($root . '/README.md'));
-        self::assertStringContainsString('Version 3, 29 June 2007', (string)file_get_contents($root . '/LICENSE'));
+        self::assertStringContainsString('Version 2, June 1991', (string)file_get_contents($root . '/LICENSE'));
     }
 
     public function testReadmeOpensWithTheAgreedTitleBlock(): void
@@ -130,7 +130,7 @@ final class ReadmeAndManifestTest extends TestCase
         self::assertSame('# Email Address Exporter', $lines[0]);
         self::assertSame('', $lines[1]);
         self::assertSame(
-            'Version ' . $version . ' · Zen Cart 1.5.8 through 3.0.0 · PHP 7.4 through 8.5 · GPL v3 · by My Zen Cart Host (dbltoe)',
+            'Version ' . $version . ' · Zen Cart 1.5.8 through 3.0.0 · PHP 7.4 through 8.5 · GPL v2 · by My Zen Cart Host (dbltoe)',
             $lines[2]
         );
     }
@@ -147,8 +147,8 @@ final class ReadmeAndManifestTest extends TestCase
     {
         $readme = self::readme();
 
-        self::assertStringContainsString('GNU General Public License, version 3', $readme);
-        self::assertStringContainsString('https://www.gnu.org/licenses/gpl-3.0.html', $readme);
+        self::assertStringContainsString('GNU General Public License, version 2', $readme);
+        self::assertStringContainsString('https://www.gnu.org/licenses/old-licenses/gpl-2.0.html', $readme);
         self::assertStringContainsString('Copyright © 2026 My Zen Cart Host (dbltoe).', $readme);
         self::assertStringContainsString(
             'a superuser can open this guide from the **ReadMe** button in Plugin Manager',
@@ -156,7 +156,7 @@ final class ReadmeAndManifestTest extends TestCase
         );
         self::assertMatchesRegularExpression('~^## Changelog\R\RSee `CHANGELOG\.md`\.~m', $readme);
         self::assertMatchesRegularExpression('~^## License\R~m', $readme);
-        self::assertDoesNotMatchRegularExpression('~GPL ?v?2|gpl-2\.0|zen-cart\.com/license~i', $readme);
+        self::assertDoesNotMatchRegularExpression('~GPL ?v?3(?![.\d])|gpl-3\.0|zen-cart\.com/license~i', $readme);
     }
 
     /**
@@ -372,7 +372,7 @@ final class ReadmeAndManifestTest extends TestCase
 
     // ------------------------------------------------------------------ license lines
 
-    public function testEveryPhpFileCarriesTheGplV3LicenseLine(): void
+    public function testEveryPhpFileCarriesTheGplV2LicenseLine(): void
     {
         foreach (self::phpFiles() as $rel) {
             $src = (string)file_get_contents(self::pluginDir() . '/' . $rel);
@@ -394,7 +394,7 @@ final class ReadmeAndManifestTest extends TestCase
             }
             $src = (string)file_get_contents(self::pluginDir() . '/' . $rel);
 
-            self::assertDoesNotMatchRegularExpression('~zen-cart\.com/license|gpl-2\.0|GPL ?v?2|Public License V2~i', $src, $rel);
+            self::assertDoesNotMatchRegularExpression('~zen-cart\.com/license|gpl-3\.0|GPL ?v?3(?![.\d])|Public License V3~i', $src, $rel);
             self::assertStringNotContainsStringIgnoringCase('readme.html', $src, $rel);
         }
     }

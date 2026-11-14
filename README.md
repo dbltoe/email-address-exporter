@@ -1,6 +1,6 @@
 # Email Address Exporter
 
-Version 3.0.2 · Zen Cart 1.5.8 through 3.0.0 · PHP 7.4 through 8.5 · GPL v3 · by My Zen Cart Host (dbltoe)
+Version 3.0.2 · Zen Cart 1.5.8 through 3.0.0 · PHP 7.4 through 8.5 · GPL v2 · by My Zen Cart Host (dbltoe)
 
 Exports customer email addresses and contact details from your Zen Cart store to a file you can import into a mailing tool, spreadsheet, or address book.
 
@@ -136,7 +136,7 @@ Leave **Add a UTF-8 BOM** ticked (the default). Without it, Excel on Windows ass
 
 ## What v3.0 brings
 
-**v3.0.2** moves the plugin to the GNU General Public License, version 3, and replaces readme.html with this guide: the ReadMe button in Plugin Manager now opens it inside the admin, for superusers, in its own window. Nothing changes on the export page or in the files it produces.
+**v3.0.2** replaces readme.html with this guide: the ReadMe button in Plugin Manager now opens it inside the admin, for superusers, in its own window. Nothing changes on the export page or in the files it produces.
 
 **v3.0.1** is hardening only, with no functional change: the admin page now refuses to run unless the admin has been bootstrapped, so a direct request to the file on a host that does not honour the shipped `zc_plugins/.htaccess` is turned away rather than emitting a path-disclosing error.
 
@@ -159,8 +159,8 @@ This plugin is free, and so is the cart it runs on. If it saves you some work, p
 
 ## Changelog
 
-See `CHANGELOG.md`. Version 3.0.2 moves the plugin to the GNU General Public License, version 3, and replaces readme.html with this guide, opened from the ReadMe button in Plugin Manager.
+See `CHANGELOG.md`. Version 3.0.2 replaces readme.html with this guide, opened from the ReadMe button in Plugin Manager.
 
 ## License
 
-Email Address Exporter is free software under the GNU General Public License, version 3 (https://www.gnu.org/licenses/gpl-3.0.html); the full text is in `LICENSE`. Copyright © 2026 My Zen Cart Host (dbltoe).
+Email Address Exporter is free software under the GNU General Public License, version 2 (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html); the full text is in `LICENSE`. Copyright © 2026 My Zen Cart Host (dbltoe).

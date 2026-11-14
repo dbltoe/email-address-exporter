@@ -5,7 +5,7 @@ Zen Cart admin tool for exporting customer email addresses and contact details.
 - **Version:** v3.0.2
 - **Zen Cart:** v1.5.8 through v3.0.0 (one codebase)
 - **PHP:** 7.4 through 8.5
-- **License:** GNU General Public License, version 3
+- **License:** GNU General Public License, version 2
 
 ## Documentation
 
